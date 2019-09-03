@@ -1,0 +1,15 @@
+SMDR_Mt_pole = `SMDR_Mt_pole`;
+SMDR_Mh_pole = `SMDR_Mh_pole`;
+SMDR_MZ_BreitWigner = `SMDR_MZ_BreitWigner`;
+SMDR_alphaS_5_MZ = `SMDR_alphaS_5_MZ`;
+SMDR_alpha = `SMDR_alpha`;
+SMDR_Delta_alpha_had_5_MZ_in = `SMDR_Delta_alpha_had_5_MZ_in`;
+SMDR_GFermi = `SMDR_GFermi`;
+SMDR_mbmb = `SMDR_mbmb`;
+SMDR_mcmc = `SMDR_mcmc`;
+SMDR_ms_2GeV = `SMDR_ms_2GeV`;
+SMDR_md_2GeV = `SMDR_md_2GeV`;
+SMDR_mu_2GeV = `SMDR_mu_2GeV`;
+SMDR_Mtau_pole = `SMDR_Mtau_pole`;
+SMDR_Mmuon_pole = `SMDR_Mmuon_pole`;
+SMDR_Melectron_pole = `SMDR_Melectron_pole`;

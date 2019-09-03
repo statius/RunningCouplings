@@ -1,0 +1,17 @@
+SMDR_Q_in = `RenormalizationScale`;
+SMDR_g3_in = `g3`;
+SMDR_g_in = `g`;
+SMDR_gp_in = `gp`;
+SMDR_v_in = `v`;
+SMDR_lambda_in = `lambda`;
+SMDR_yt_in = `yt`;
+SMDR_yb_in = `yb`;
+SMDR_yc_in = `yc`;
+SMDR_ys_in = `ys`;
+SMDR_yd_in = `yd`;
+SMDR_yu_in = `yu`;
+SMDR_ytau_in = `ytau`;
+SMDR_ymu_in = `ymu`;
+SMDR_ye_in = `ye`;
+SMDR_m2_in = `m2`;
+SMDR_Lambda_in = `Lambda`;
