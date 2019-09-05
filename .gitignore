@@ -1,8 +1,68 @@
-RunningCouplings-old.nb
-RunningCouplings-old.m
+RunningCouplings-notebook.nb
+RunningCouplings-notebook.m
 include/SM/smdr-runningcouplings-mt.wl
 smdr/smdr-1.0/bin
 smdr/smdr-1.0/include
 smdr/smdr-1.0/lib
 smdr/smdr-1.0/3vil-v2.0
 smdr/smdr-1.0/tsil-1.44
+
+
+# Created by https://www.gitignore.io/api/c
+# Edit at https://www.gitignore.io/?templates=c
+
+### C ###
+# Prerequisites
+*.d
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Linker output
+*.ilk
+*.map
+*.exp
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Kernel Module Compile Results
+*.mod*
+*.cmd
+.tmp_versions/
+modules.order
+Module.symvers
+Mkfile.old
+dkms.conf
+
+# End of https://www.gitignore.io/api/c
