@@ -1979,6 +1979,7 @@ mem : ibetaFunction[modelname_] := mem = Module[
            ];
   
     array = Join @@ (Import[#, "Package"] & /@ array);
+    
     array = ReplaceRepeated[
       array,
       
@@ -2005,6 +2006,7 @@ mem : ibetaFunction[modelname_] := mem = Module[
          
       ]
     ];
+    
     array = array /. ((Symbol[#] -> Symbol[#][t]) & /@ array[[All, 1]]);
   
     Association[(#1 -> {##2} Log[10] / ((16 \[Pi]^2)^Range[Length @ {##2}])) & @@@ array]
@@ -2489,7 +2491,7 @@ mem : nRenormalizeModel[{"SM", "NDSolve"}, args_Association, opts : OptionsPatte
 (*MSSM*)
 
 
-(* ::Subsubsubsection::Closed:: *)
+(* ::Subsubsubsection:: *)
 (*NDSolve*)
 
 
@@ -2618,13 +2620,7 @@ mem : nRenormalizeModel[{"MSSM", "NDSolve"}, args_Association, opts : OptionsPat
         
         {t, tmin, tmax},
         
-        FilterRules[{opts}, Options @ NDSolve],
-        
-        If[
-          majorana, 
-          StepMonitor :> (kappa[t] = Symmetrize[kappa[t], Symmetric @ {1, 2}]), 
-          Sequence
-        ]
+        FilterRules[{opts}, Options @ NDSolve]
       ] // First,
       {All, 1}
     ] // Association
