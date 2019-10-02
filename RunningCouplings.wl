@@ -1840,7 +1840,9 @@ $ckm @ "WolfensteinRhoBar" = Around[$ckm["WolfensteinRhoBar", "CentralValue"], A
 $ckm @ "WolfensteinEtaBar" = Around[$ckm["WolfensteinEtaBar", "CentralValue"], Abs @ $ckm["WolfensteinEtaBar", "Uncertainty"]];
 
 
-$ckm["WolfensteinParametrization"] = MixingMatrix["CKM", "WolfensteinParametrization"][
+$ckm["WolfensteinParametrization"] = iMixingMatrix[
+  {"CKM", "WolfensteinParametrization"},
+  
   {
    $ckm @ "WolfensteinLambda", 
    $ckm @ "WolfensteinA", 
@@ -1873,7 +1875,9 @@ Scan[
 
 Scan[
   (
-   $pmns[#, "StandardParametrization"] = MixingMatrix["PMNS", "StandardParametrization"][
+   $pmns[#, "StandardParametrization"] = iMixingMatrix[
+     {"PMNS", "StandardParametrization"},
+     
      {
       $pmns[#, "Theta12"],
       $pmns[#, "Theta23"],
@@ -1889,7 +1893,7 @@ Scan[
 $pmns[para_String, opts : OptionsPattern[]] := $pmns[(OptionValue["NeutrinoMassHierarchy"] /. Automatic -> "Normal") <> "Hierarchy", para]
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*neutrino mass data*)
 
 
@@ -1921,7 +1925,7 @@ $neutrino["InvertedHierarchy", "DeltaMassSquared32"] = Around[
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*neutrinoMasses*)
 
 
@@ -1940,8 +1944,8 @@ neutrinoMasses[opts : OptionsPattern[]] := With[
    "Inverted",
     Sqrt[
       {
-       m0^2 - ($neutrino["NormalHierarchy", "DeltaMassSquared32"]) + ($neutrino["NormalHierarchy", "DeltaMassSquared21"] 10^(-18)),
-       m0^2 - ($neutrino["NormalHierarchy", "DeltaMassSquared32"] 10^(-18)),
+       m0^2 - ($neutrino["InvertedHierarchy", "DeltaMassSquared32"] 10^(-18)) - ($neutrino["InvertedHierarchy", "DeltaMassSquared21"] 10^(-18)),
+       m0^2 - ($neutrino["InvertedHierarchy", "DeltaMassSquared32"] 10^(-18)),
        m0^2
       }
     ],
@@ -2491,7 +2495,7 @@ mem : nRenormalizeModel[{"SM", "NDSolve"}, args_Association, opts : OptionsPatte
 (*MSSM*)
 
 
-(* ::Subsubsubsection:: *)
+(* ::Subsubsubsection::Closed:: *)
 (*NDSolve*)
 
 
