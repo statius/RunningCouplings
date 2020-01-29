@@ -3515,7 +3515,7 @@ RunningGaugeCoupling[{model_, 2}, scale_? NumericQ, opts : OptionsPattern[]] := 
 RunningGaugeCoupling[{model_, 3}, scale_? NumericQ, opts : OptionsPattern[]] := RunningCouplings[model, scale, opts]["g3"]
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*RunningYukawaCoupling*)
 
 
@@ -3553,9 +3553,9 @@ RunningYukawaCoupling[{model_, "s"}, scale_? NumericQ, opts : OptionsPattern[]] 
 RunningYukawaCoupling[{model_, "b"}, scale_? NumericQ, opts : OptionsPattern[]] := RunningYukawaCoupling[{model, "D", 3}, scale, opts]
 
 
-RunningYukawaCoupling[{model_, ("v1" | "\[ScriptV]1")}, scale_? NumericQ, opts : OptionsPattern[]] := RunningYukawaCoupling[{model, "V", 1}, scale, opts]
-RunningYukawaCoupling[{model_, ("v2" | "\[ScriptV]2")}, scale_? NumericQ, opts : OptionsPattern[]] := RunningYukawaCoupling[{model, "V", 2}, scale, opts]
-RunningYukawaCoupling[{model_, ("v3" | "\[ScriptV]3")}, scale_? NumericQ, opts : OptionsPattern[]] := RunningYukawaCoupling[{model, "V", 3}, scale, opts]
+RunningYukawaCoupling[{model_, ("v1" | "\[Nu]1")}, scale_? NumericQ, opts : OptionsPattern[]] := RunningYukawaCoupling[{model, "V", 1}, scale, opts]
+RunningYukawaCoupling[{model_, ("v2" | "\[Nu]2")}, scale_? NumericQ, opts : OptionsPattern[]] := RunningYukawaCoupling[{model, "V", 2}, scale, opts]
+RunningYukawaCoupling[{model_, ("v3" | "\[Nu]3")}, scale_? NumericQ, opts : OptionsPattern[]] := RunningYukawaCoupling[{model, "V", 3}, scale, opts]
 
 
 (* ::Subsection::Closed:: *)
