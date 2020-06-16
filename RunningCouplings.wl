@@ -1925,7 +1925,7 @@ $neutrino["InvertedHierarchy", "DeltaMassSquared32"] = Around[
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*neutrinoMasses*)
 
 
@@ -3173,7 +3173,7 @@ uRunningCouplings[
         },
         Around[
           #[[1]]["Value"], 
-          #[[1]]["Uncertainty"] + Sqrt[quadmax[toRoundedNumber[#[[2]]] - toRoundedNumber[#[[1]]]]] /. {x_, y_} /; x == y :> x
+          #[[1]]["Uncertainty"] + Sqrt[quadmax[toRoundedNumber[#[[2]]] - toRoundedNumber[#[[1]]["Value"]]]] /. {x_, y_} /; x == y :> x
         ] &
         
       ]
@@ -3515,7 +3515,7 @@ RunningGaugeCoupling[{model_, 2}, scale_? NumericQ, opts : OptionsPattern[]] := 
 RunningGaugeCoupling[{model_, 3}, scale_? NumericQ, opts : OptionsPattern[]] := RunningCouplings[model, scale, opts]["g3"]
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*RunningYukawaCoupling*)
 
 
