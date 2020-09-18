@@ -903,12 +903,18 @@ getCCompilerFlags[compiler_] := Module[{makefile, flags},
 (*BuildSMDR*)
 
 
-Options @ BuildSMDR = {"CCompiler" -> Automatic, "CCompilerFlags" -> Automatic, "ArchiveCommand" -> Automatic};
+Options @ BuildSMDR = {
+  "ArchiveCommand" -> Automatic,
+  "CCompiler" -> Automatic, 
+  "CCompilerFlags" -> Automatic, 
+  "MakePath" -> Automatic
+};
 
 
 SyntaxInformation @ BuildSMDR = {"ArgumentsPattern" -> {OptionsPattern[]}, "OptionNames" -> Keys[Options @ BuildSMDR]};
 
 
+BuildSMDR::makex = "SMDR compilation failed. Error in make call."
 BuildSMDR::compx = "SMDR compilation failed. Please run BuildSMDR with adjusted options or specify the configuration option \"SMDRExecutableDirectory\"."
 
 
@@ -918,25 +924,52 @@ mem : BuildSMDR[opts : OptionsPattern[]] := Monitor[
     {make},
     
     With[
-      {ccompiler = OptionValue @ "CCompiler" /. Automatic :> getCCompiler[]},
+      {
+       ccompiler = OptionValue @ "CCompiler" /. Automatic :> getCCompiler[],
+       makepath = OptionValue @ "MakePath"
+      },
     
       With[
         {
          ccompilerflags = OptionValue @ "CCompilerFlags" /. Automatic :> getCCompilerFlags @ ccompiler,
-         ar = OptionValue @ "ArchiveCommand"
+         ar = OptionValue @ "ArchiveCommand",
         },
    
-        make = RunProcess[
-          {
-           "make",
-           "-C", 
-           RunningCouplings`SMDR`$SourceDirectory, 
-           "CC=" <> ccompiler, 
-           "SMDR_OPT=" <> ccompilerflags,
-           If[StringQ @ ar, "AR=" <> ar, Nothing],
-           "INSTALL_INCS=" <> RunningCouplings`SMDR`$IncludeDirectory,
-           "INSTALL_LIBS=" <> RunningCouplings`SMDR`$LibraryDirectory
-          }
+        make = Check[
+          RunProcess[
+            {
+            If[StringQ @ makepath, FileNameJoin @ {makepath, "make"}, "make"]
+            "-C", 
+            RunningCouplings`SMDR`$SourceDirectory, 
+            "CC=" <> ccompiler, 
+            "SMDR_OPT=" <> ccompilerflags,
+            If[StringQ @ ar, "AR=" <> ar, Nothing],
+            "INSTALL_INCS=" <> RunningCouplings`SMDR`$IncludeDirectory,
+            "INSTALL_LIBS=" <> RunningCouplings`SMDR`$LibraryDirectory
+            }
+          ],
+
+          Failure[
+            "CompilationError",
+            Association[
+              "Message" -> BuildSMDR::makex,
+              "CCompiler" -> ccompiler,
+              "CCompilerFlags" -> ccompilerflags,
+              "ArchiveCommand" -> ar,
+              "MakeCommand" -> StringRiffle[
+                {
+                 If[StringQ @ makepath, FileNameJoin @ {makepath, "make"}, "make"] 
+                 "-C", 
+                 RunningCouplings`SMDR`$SourceDirectory, 
+                 "CC=" <> ccompiler, 
+                 "SMDR_OPT=" <> ccompilerflags,
+                 If[StringQ @ ar, "AR=" <> ar, Nothing],
+                 "INSTALL_INCS=" <> RunningCouplings`SMDR`$IncludeDirectory,
+                 "INSTALL_LIBS=" <> RunningCouplings`SMDR`$LibraryDirectory
+                }
+              ],
+            ]
+          ] // Throw
         ];
     
         If[
