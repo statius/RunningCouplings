@@ -899,7 +899,7 @@ getCCompilerFlags[compiler_] := Module[{makefile, flags},
 ]
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*BuildSMDR*)
 
 
@@ -967,7 +967,7 @@ mem : BuildSMDR[opts : OptionsPattern[]] := Monitor[
                  "INSTALL_INCS=" <> RunningCouplings`SMDR`$IncludeDirectory,
                  "INSTALL_LIBS=" <> RunningCouplings`SMDR`$LibraryDirectory
                 }
-              ],
+              ]
             ]
           ] // Throw
         ];
@@ -2975,7 +2975,7 @@ Options @ uRunningCouplings = Options @ RenormalizeModel;
 
 uRunningCouplings[
   model_,
-  scale_? NumericQ,
+  scale : (_? NumericQ | _String),
   inputparams_Association,
   opts : OptionsPattern[]
 ] := With[
@@ -3165,7 +3165,7 @@ uRunningCouplings[
 
 uRunningCouplings[
   model_,
-  scale_? NumericQ,
+  scale : (_? NumericQ | _String),
   {inputlow_Association, inputparams_Association, inputhigh_Association},
   opts : OptionsPattern[]
 ] := With[
