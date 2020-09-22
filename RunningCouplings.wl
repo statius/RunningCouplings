@@ -389,7 +389,12 @@ toRoundedNumber[s_String] := With[
 (*roundTo*)
 
 
-roundTo[n_? NumericQ, ref_? NumericQ] := Round[n, (Length @ #1 - #2) & @@ (RealDigits @ ref)]
+roundTo[n_? NumericQ, ref_? NumericQ] := With[
+  {digits = Length @ #1 - #2 & @@ (RealDigits @ ref)},
+  
+  Round[n, 10.^(-digits)]
+  
+]
 
 
 (* ::Subsubsection::Closed:: *)
@@ -903,7 +908,11 @@ getCCompilerFlags[compiler_] := Module[{makefile, flags},
 (*BuildSMDR*)
 
 
-Options @ BuildSMDR = {
+(* ::Subsubsubsection::Closed:: *)
+(*iBuildSMDR*)
+
+
+Options @ iBuildSMDR = {
   "ArchiveCommand" -> Automatic,
   "CCompiler" -> Automatic, 
   "CCompilerFlags" -> Automatic, 
@@ -911,14 +920,11 @@ Options @ BuildSMDR = {
 };
 
 
-SyntaxInformation @ BuildSMDR = {"ArgumentsPattern" -> {OptionsPattern[]}, "OptionNames" -> Keys[Options @ BuildSMDR]};
-
-
 BuildSMDR::makex = "SMDR compilation failed. Error in make call."
 BuildSMDR::compx = "SMDR compilation failed. Please run BuildSMDR with adjusted options or specify the configuration option \"SMDRExecutableDirectory\"."
 
 
-mem : BuildSMDR[opts : OptionsPattern[]] := Monitor[
+mem : iBuildSMDR[opts : OptionsPattern[]] := Monitor[
       
   Module[
     {make},
@@ -932,20 +938,18 @@ mem : BuildSMDR[opts : OptionsPattern[]] := Monitor[
       With[
         {
          ccompilerflags = OptionValue @ "CCompilerFlags" /. Automatic :> getCCompilerFlags @ ccompiler,
-         ar = OptionValue @ "ArchiveCommand",
+         ar = OptionValue @ "ArchiveCommand"
         },
    
         make = Check[
           RunProcess[
             {
-            If[StringQ @ makepath, FileNameJoin @ {makepath, "make"}, "make"]
+            If[StringQ @ makepath, FileNameJoin @ {makepath, "make"}, "make"],
             "-C", 
             RunningCouplings`SMDR`$SourceDirectory, 
             "CC=" <> ccompiler, 
             "SMDR_OPT=" <> ccompilerflags,
-            If[StringQ @ ar, "AR=" <> ar, Nothing],
-            "INSTALL_INCS=" <> RunningCouplings`SMDR`$IncludeDirectory,
-            "INSTALL_LIBS=" <> RunningCouplings`SMDR`$LibraryDirectory
+            If[StringQ @ ar, "AR=" <> ar, Nothing]
             }
           ],
 
@@ -956,16 +960,14 @@ mem : BuildSMDR[opts : OptionsPattern[]] := Monitor[
               "CCompiler" -> ccompiler,
               "CCompilerFlags" -> ccompilerflags,
               "ArchiveCommand" -> ar,
-              "MakeCommand" -> StringRiffle[
+              "MakeCommand" -> StringRiffle[_
                 {
-                 If[StringQ @ makepath, FileNameJoin @ {makepath, "make"}, "make"] 
+                 If[StringQ @ makepath, FileNameJoin @ {makepath, "make"}, "make"], 
                  "-C", 
                  RunningCouplings`SMDR`$SourceDirectory, 
                  "CC=" <> ccompiler, 
                  "SMDR_OPT=" <> ccompilerflags,
-                 If[StringQ @ ar, "AR=" <> ar, Nothing],
-                 "INSTALL_INCS=" <> RunningCouplings`SMDR`$IncludeDirectory,
-                 "INSTALL_LIBS=" <> RunningCouplings`SMDR`$LibraryDirectory
+                 If[StringQ @ ar, "AR=" <> ar, Nothing]
                 }
               ]
             ]
@@ -989,9 +991,7 @@ mem : BuildSMDR[opts : OptionsPattern[]] := Monitor[
                  RunningCouplings`SMDR`$SourceDirectory, 
                  "CC=" <> ccompiler, 
                  "SMDR_OPT=" <> ccompilerflags,
-                 If[StringQ @ ar, "AR=" <> ar, Nothing],
-                 "INSTALL_INCS=" <> RunningCouplings`SMDR`$IncludeDirectory,
-                 "INSTALL_LIBS=" <> RunningCouplings`SMDR`$LibraryDirectory
+                 If[StringQ @ ar, "AR=" <> ar, Nothing]
                 }
               ],
               "StandardError" -> "\n" <> make @ "StandardError"
@@ -1002,8 +1002,16 @@ mem : BuildSMDR[opts : OptionsPattern[]] := Monitor[
         If[! DirectoryQ @ RunningCouplings`SMDR`$ExecutableDirectory, CreateDirectory @ RunningCouplings`SMDR`$ExecutableDirectory];
         If[! DirectoryQ @ RunningCouplings`SMDR`$IncludeDirectory, CreateDirectory @ RunningCouplings`SMDR`$IncludeDirectory];
         If[! DirectoryQ @ RunningCouplings`SMDR`$LibraryDirectory, CreateDirectory @ RunningCouplings`SMDR`$LibraryDirectory];
-    
-        RunProcess[{"make", "-C", RunningCouplings`SMDR`$SourceDirectory, "install"}];
+
+        RenameFile[#, FileNameJoin @ {RunningCouplings`SMDR`$IncludeDirectory, FileNameTake @ #}] & /@ Select[
+          FileNames["*.h", RunningCouplings`SMDR`$SourceDirectory],
+          ! DirectoryQ @ # &
+        ];
+
+        RenameFile[#, FileNameJoin @ {RunningCouplings`SMDR`$LibraryDirectory, FileNameTake @ #}] & /@ Select[
+          FileNames["lib*.a", RunningCouplings`SMDR`$SourceDirectory],
+          ! DirectoryQ @ # &
+        ];
     
         RenameFile[#, FileNameJoin @ {RunningCouplings`SMDR`$ExecutableDirectory, FileNameTake @ #}] & /@ Select[
           FileNames[{"calc_*", "fig_*"}, RunningCouplings`SMDR`$SourceDirectory],
@@ -1028,6 +1036,19 @@ mem : BuildSMDR[opts : OptionsPattern[]] := Monitor[
   Row @ {"Building SMDR ", ProgressIndicator[Appearance -> "Ellipsis"]}
   
 ]
+
+
+(* ::Subsubsubsection::Closed:: *)
+(*BuildSMDR*)
+
+
+Options @ BuildSMDR = Options @ iBuildSMDR;
+
+
+SyntaxInformation @ BuildSMDR = {"ArgumentsPattern" -> {OptionsPattern[]}, "OptionNames" -> Keys[Options @ BuildSMDR]};
+
+
+BuildSMDR[opts : OptionsPattern[]] := iBuildSMDR[opts]
 
 
 (* ::Subsection:: *)
@@ -1107,7 +1128,7 @@ mem : smdrInputParameters[] := mem = With[
                # <> "_EXPT_UNC_hi" ~~ (WhitespaceCharacter ...) ~~ "=" ~~ Shortest[val__] ~~ ";" :> roundTo[ToExpression[StringTrim @ val], centralvalue]
              ]
             } 
-          ] /. {x_} :> x
+          ] /. {{x_} :> x, {x_, y_} /; x == y :> x}
         ] 
       ] &,
       {
@@ -2970,7 +2991,7 @@ RenormalizeModel[
 (*uRunningCouplings*)
 
 
-Options @ uRunningCouplings = Options @ RenormalizeModel;
+Options @ uRunningCouplings = Normal[<|Options @ RenormalizeModel, "UncertainCouplings" -> Automatic|> // KeySort];
 
 
 uRunningCouplings[
@@ -2981,7 +3002,7 @@ uRunningCouplings[
 ] := With[
   {
    iparams = flattenAssociation[inputparams /. a_Around :> a @ "Value"],
-   keys = Keys @ Select[inputparams // flattenAssociation, MatchQ[#, _Around] &],
+   keys = OptionValue @ "UncertainCouplings" /. Automatic -> Keys @ Select[inputparams // flattenAssociation, MatchQ[#, _Around] &],
    quadsum = {Total[Select[#, Negative]^2], Total[Select[#, Positive]^2]} &
   },
   
@@ -3010,7 +3031,7 @@ uRunningCouplings[
         ] // flattenAssociation 
        } &,
        Select[inputparams // flattenAssociation, MatchQ[#, _Around] &]
-     ] // Flatten     
+     ] // Flatten   
     },
     
     Association[
@@ -3171,7 +3192,7 @@ uRunningCouplings[
 ] := With[
   {
    iparams = inputparams /. a_Around :> a @ "Value",
-   keys = Keys @ Select[inputparams // flattenAssociation, MatchQ[#, _Around] &],
+   keys = OptionValue @ "UncertainCouplings" /. Automatic -> Keys @ Select[inputparams // flattenAssociation, MatchQ[#, _Around] &],
    quadmax = {Max[0, Select[#, Negative]^2], Max[0, Select[#, Positive]^2]} &
   },
   
@@ -3314,7 +3335,10 @@ mem : iRunningCouplings[
 ] := mem = Monitor[
 
   With[
-    {inputfile = FileNameJoin @ {RunningCouplings`Developer`$PackageDirectory, "include", "SM", "smdr-runningcouplings-mt.wl"}},
+    {
+     inputfile = FileNameJoin @ {RunningCouplings`Developer`$PackageDirectory, "include", "SM", "smdr-runningcouplings-mt.wl"},
+     ucouplings = DeleteCases[$calcRGrunInputParameterNames, "RenormalizationScale"]
+    },
   
     If[
     
@@ -3328,7 +3352,7 @@ mem : iRunningCouplings[
            {"SM", "SMDR"}, 
            "TopQuarkPoleMassScale", 
            smdrInputParameters[],
-           FilterRules[{opts}, Options @ uRunningCouplings]  
+           FilterRules[<|"UncertainCouplings" -> ucouplings, opts|> // Normal, Options @ uRunningCouplings]
          ]
         },
       
@@ -3508,7 +3532,12 @@ RunningCouplings[{model_, "Ranges"}, scale_, opts : OptionsPattern[]] := With[
 (*SMDR*)
 
 
-RunningCouplings["SM", "TopQuarkPoleMassScale", opts : OptionsPattern[]] := iRunningCouplings[{"SM", "SMDR"}, 
+RunningCouplings[
+  "SM", 
+  "TopQuarkPoleMassScale", 
+  opts : OptionsPattern[]
+] := iRunningCouplings[
+  {"SM", "SMDR"}, 
   "TopQuarkPoleMassScale", 
   FilterRules[{opts}, Options @ iRunningCouplings]
 ]
