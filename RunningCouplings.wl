@@ -11,10 +11,10 @@
 (* : Title : RunningCouplings *)
 (* : Author : Andrew Miller < amiller@physics.umn.edu > *)
 (* : Context : RunningCouplings` *)
-(* : Version : 0.1.0 *)
-(* : Date : 2019-08-01 *)
+(* : Version : 0.1.01 *)
+(* : Date : 2020-09-20 *)
 (* : Mathematica Version : 12.0 *)
-(* : Copyright : (c) 2019 Andrew Miller *)
+(* : Copyright : (c) 2020 Andrew Miller *)
 
 
 (* ::Title::GrayLevel[0]:: *)

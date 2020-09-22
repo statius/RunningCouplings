@@ -1,41 +1,7 @@
-/* Reading and processing command line arguments. */
-
-#include "smdr_internal.h"
-
-/* long double strtold (const char *, char **); */
-
-/* ---------------------------------------------------------------------- */
-/* ---------------------------------------------------------------------- */
-/* The assignment of an argument to the specified variable, in one
-   convenient location to allow for extensions if desired.
-*/
-
-void SMDR_Assign_Argument (const char *arg, const char *atype, void *avar)
-{
-  char funcname[] = "SMDR_Assign_Argument";
-
-  if (!strcmp (atype, "real"))
-    *((SMDR_REAL *) avar) = (SMDR_REAL) strtold (arg, NULL);
-  else if (!strcmp (atype, "int"))
-    *((int *) avar) = (int) atoi (arg);
-  else if (!strcmp (atype, "string"))
-    strcpy (avar, arg);
-  else if (!strcmp (atype, "toggle"))
-    *((int *) avar) = YES;
-  else {
-    printf ("Type \"%s\" not recognized!\n", atype);
-    SMDR_Error (funcname, "Error in argument type specification.", 876);
-  }
-
-  return;
-}
-
-/* ---------------------------------------------------------------------- */
-/* ---------------------------------------------------------------------- */
-/* 
-   This is a simple function to process a set of command line
+/*
+   This is a simple system for processing a set of command line
    arguments. The arguments and their types are defined in the calling
-   program, and passed in via the variables:
+   program, and passed to SMDR_Process_Arguments () via the variables:
 
    nargs
    -----
@@ -73,8 +39,9 @@ void SMDR_Assign_Argument (const char *arg, const char *atype, void *avar)
 
    char argtype[] = {"string","int","real","real","string"};
 
-   Type "toggle" is used for an argument that acts as a toggle, i.e.,
-   without an associated value.
+   Type "toggle" is used for an argument that does not have an
+   associated value. If specified, the associated value is set to 1
+   (TRUE).
 
    argvar
    ------
@@ -108,6 +75,51 @@ void SMDR_Assign_Argument (const char *arg, const char *atype, void *avar)
    not bulletproof. Caveat emptor!
 */
 
+#include "smdr_internal.h"
+
+/* ---------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------- */
+/* The assignment of an argument to the specified variable, in one
+   convenient location to allow for extensions if desired.
+*/
+
+void SMDR_Assign_Argument (const char *arg, const char *atype, void *avar)
+{
+  char funcname[] = "SMDR_Assign_Argument";
+
+  if (!strcmp (atype, "real"))
+    *((SMDR_REAL *) avar) = (SMDR_REAL) strtold (arg, NULL);
+  else if (!strcmp (atype, "int"))
+    *((int *) avar) = (int) atoi (arg);
+  else if (!strcmp (atype, "string"))
+    strcpy (avar, arg);
+  else if (!strcmp (atype, "toggle"))
+    *((int *) avar) = TRUE;
+  else {
+    printf ("Type \"%s\" not recognized!\n", atype);
+    SMDR_Error (funcname, "Error in argument type specification.", 876);
+  }
+
+  return;
+}
+
+/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ */
+/* Simplified errorr reporting without stack trace or calling function
+   name, for use in argument processing.
+
+   Prints to stdout so that true errors will always be seen. 
+*/
+
+void SMDR_ArgError (char *msg, int code)
+{
+  fprintf(stdout, "ERROR: %s Exiting...\n", msg);
+  exit(code);
+}
+
+/* ---------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------- */
+
 int SMDR_Process_Arguments (int   argc, 
 			    char *argv[], 
 			    int   nargs,
@@ -116,10 +128,11 @@ int SMDR_Process_Arguments (int   argc,
 			    void *argvar[])
 {
   int i, j, k;
-  char funcname[] = "SMDR_Process_Arguments";
+  /* char funcname[] = "SMDR_Process_Arguments"; */
   int numRequiredArgs;
+  char errmsg[100], foo[5];
 
-  /* First, find number of required arguments: */
+  /* First, find the number of required arguments: */
   numRequiredArgs = 0;
   for (i=0; i<nargs; i++)
     if (!strcmp (arglist[i], "req"))
@@ -127,7 +140,7 @@ int SMDR_Process_Arguments (int   argc,
 
   /* Then, a simple check: */
   if (numRequiredArgs > argc - 1)
-    SMDR_Error (funcname, "Required arguments are missing.", 876);
+    SMDR_ArgError ("Some required argument(s) is/are missing.", 876);
 
   i = 1;
   while (i < argc) {
@@ -136,13 +149,13 @@ int SMDR_Process_Arguments (int   argc,
     
     if (!strcmp (arglist[j], "req")) {
       
-      /* Simple test for an optional argument. Not bulletproof! */
+      /* Simple test for an optional argument. */
       if (!strncmp (argv[i], "-", 1)) {
-	for (k=numRequiredArgs; k<nargs; k++) 
-	  if (!strcmp (argv[i], arglist[k])) {
-	    printf ("Argument %d required but has been specified as optional.\n", i);
-	    SMDR_Error (funcname, "Error in argument specification.", 876);
-	  }
+	sprintf (foo, "%d", i);
+	strcpy (errmsg, "Argument ");
+	strcat (errmsg, foo);
+	strcat (errmsg, " is required but has been specified as optional.");
+	SMDR_ArgError (errmsg, 876);
       }
 
       SMDR_Assign_Argument (argv[i], argtype[j], argvar[j]);
@@ -155,25 +168,34 @@ int SMDR_Process_Arguments (int   argc,
   /* Done with required args, now for the optional ones... */
   while (i < argc) {
 
+    if (!strncmp (argv[i], "-", 1))
+      ;
+    else {
+      strcpy (errmsg, "\"");
+      strcat (errmsg, argv[i]);
+      strcat (errmsg, "\" is not an optional argument flag, something is wrong.");
+      SMDR_ArgError (errmsg, 876);
+    }
+
     for (j=numRequiredArgs; j<nargs; j++) {
-
       if (!strcmp (argv[i], arglist[j])) {
-
-	if (!strncmp (argv[i], "-", 1))
-	  i++;
-	else {
-	  printf ("NOT a flag, something is wrong!\n");
-	  SMDR_Error (funcname, "Error in argument type specification.", 876);
-	}
-
-	SMDR_Assign_Argument (argv[i], argtype[j], argvar[j]);
+	SMDR_Assign_Argument (argv[i+1], argtype[j], argvar[j]);
 	break;
       }
     }
+
+    /* If we get here, the flag was not recognized: */
     if (j == nargs) {
-      printf ("Flag \"%s\" for optional argument not recognized!\n", argv[i]);
-      SMDR_Error (funcname, "Error in argument specification.", 876);
+      strcpy (errmsg, "Optional argument \"");
+      strcat (errmsg, argv[i]);
+      strcat (errmsg, "\" not recognized.");
+      SMDR_ArgError (errmsg, 876);
     }
+
+    /* Go to the next argument */
+    i++;
+
+    /* If the flag was *not* a toggle, also step over the argument: */
     if (strcmp(argtype[j],"toggle"))
       i++;
   }

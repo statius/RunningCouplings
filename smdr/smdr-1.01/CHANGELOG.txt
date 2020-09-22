@@ -1,0 +1,23 @@
+June 18, 2020 Version 1.01
+---------------------------
+
+* The complete 4-loop contributions to the non-decoupled Standard Model 
+  gauge coupling beta functions have been added, in src/betas.c. This 
+  consists of results from 1912.07624 "Gauge coupling beta functions to 
+  four-loop order in the Standard Model", by Joshua Davies, Florian Herren, 
+  Colin Poole, Matthias Steinhauser, Anders Eller Thomsen.
+
+* The benchmark file benchmark_data/ReferenceModel.dat and 
+  src/smdr_pdg.h have been updated to include the latest data from the 
+  2020 Review of Particle Properties. The changes are:
+    Top-quark pole mass: 173.1 has changed to 172.4
+    QCD coupling alpha_S: 0.1181 has changed to 0.1179
+    Delta_alpha_had_5_MZ: 0.02764 has changed to 0.02766
+    s2W_MZ: 0.23122 has changed to 0.23121
+    Fine structure constant: 0.0072973525664 has changed to 0.0072973525693
+
+* The included code tsil-1.44 has been updated to tsil-1.45 and 3vil-v2.0 
+  has been updated to 3vil-v2.01. These changes should affect nothing in 
+  smdr, except to make some computations involving trilogs slightly faster.
+
+

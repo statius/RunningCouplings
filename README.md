@@ -50,7 +50,7 @@ Wolfram Language package calculating the couplings and mixings (including uncert
 
 ## Usage
 
-For usage examples see *usage-examples.nb*.
+For usage examples, see *usage-examples.nb*.
 
 ## Project Information
 
