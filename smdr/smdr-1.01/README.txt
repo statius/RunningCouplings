@@ -1,5 +1,5 @@
                      ********************************
-		           Welcome to SMDR v1.0
+		           Welcome to SMDR v1.01
                      ********************************
 
 Copyright (C) 2019 S.P. Martin and D.G. Robertson
@@ -120,7 +120,7 @@ SMDR is available from:
        http://www.niu.edu/spmartin/SMDR
        http://faculty.otterbein.edu/drobertson/SMDR
 
-Version number: 1.0
+Version number: 1.01
 
 
 ********************************************************************* 

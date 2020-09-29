@@ -1,9 +1,11 @@
 include/SM/smdr-runningcouplings-mt.wl
-smdr/smdr-1.0/bin
-smdr/smdr-1.0/include
-smdr/smdr-1.0/lib
-smdr/smdr-1.0/3vil-v2.0
-smdr/smdr-1.0/tsil-1.44
+smdr/smdr-*/bin
+smdr/smdr-*/include
+smdr/smdr-*/lib
+smdr/smdr-*/3vil-v*
+smdr/smdr-*/tsil-*
+smdr/smdr-*/ReferenceModel.dat
+smdr/smdr-*/src/make_coeffs
 
 
 # Created by https://www.gitignore.io/api/c
